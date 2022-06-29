@@ -1,0 +1,25 @@
+services:
+  twamp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: twamp-client
+    hostname: twamp-client
+    image: twamp-client:latest
+    volumes:
+      - twamp:/config
+    networks:
+      twamp:
+    restart: unless-stopped
+
+networks:
+  twamp:
+    driver: bridge
+volumes:
+  twamp:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/pi/containers/twamp-client
+      o: bind
+
