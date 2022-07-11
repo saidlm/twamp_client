@@ -2,7 +2,7 @@
 #
 # METIS perfSONAR twping wrapper for TWAMP measurements
 #
-# Release 1.8.1
+# Release 1.9.0
 #
 # Bartlomiej Kos, bartlomiej.kos@t-mobile.pl / NWI-ITI / GTS Poland
 # Martin Saidl, martin.saidl@t-mobile.cz / NWI-ITI / GTS Czech Republic
@@ -19,6 +19,10 @@
 ### ENVIRONMENTALS
 
 PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+
+### VARIABLES
+
+_test_source1=""
 
 ###
 ### FUNCTIONS
@@ -225,13 +229,16 @@ send_result1()
 curl --connect-timeout 15 -m 10 -s -k -X POST -H "Content-Type: application/json" -H "Authorization: Basic ${_result_delivery_auth_string1}" -d "${output_oneliner1}" ${_result_delivery_url1}
 }
 
+set_test_source_name1()
+{
+if [ "${_test_source1}" = "" ]; then _test_source1="$(hostname -f)"; fi
+}
+
 ###
 ### LOOPS
 ###
 
-_test_source1=`hostname -s`
-
-while getopts "t:q:d:a:" _options1; do
+while getopts "t:q:d:a:s:" _options1; do
  case ${_options1} in
  t)
   _test_target1="${OPTARG}"
@@ -246,11 +253,16 @@ while getopts "t:q:d:a:" _options1; do
  a)
   _result_delivery_auth_string1="${OPTARG}"
   ;;
+ s)
+  _test_source1="${OPTARG}"
+  ;;
   *)
   exit 1
   ;;
  esac
 done
+
+set_test_source_name1
 
 run_test1
 process_result1
@@ -260,5 +272,6 @@ send_result1
 ### POST-RUN
 ###
 
-# EOF
+exit ${return_value1}
 
+# EOF
