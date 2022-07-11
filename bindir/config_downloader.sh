@@ -4,7 +4,7 @@
 DATA=${DATA_DIR}
 BIN=${BIN_DIR}
 
-SRC='http://saidlm.tone.cz/twamp/'
+SRC='http://host.domain.xxx/dir/'
 
 echo "Downloading new configuration ..."
 
