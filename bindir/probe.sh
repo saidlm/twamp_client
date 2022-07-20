@@ -10,7 +10,7 @@ flock -n 200 || echo "Measuring is still in progress, skipping this run."
 
 ## Loading global configuration
 if [ -f "$DATA/global_config.json" ]; then
-	eval "$(cat $DATA/global_config.json | jq -r '{ Destination, Password } | to_entries | .[] | .key + "=" + (.value | @sh)')"
+	eval "$(cat $DATA/global_config.json | jq -r '{ DestinationURL, DestinationPassword } | to_entries | .[] | .key + "=" + (.value | @sh)')"
 else
         echo "Global config is missing! Waiting for 5 minutes."
         exit 1
@@ -22,7 +22,7 @@ if [ -f "$DATA/targets_list.json" ]; then
 		eval "$(echo $line | base64 --decode | jq -r '{ IP, DSCP } | to_entries | .[] | .key + "=" + (.value | @sh)')"
 
 		echo "Processing $IP."
-		$BIN/metis_twmping.sh -t $IP -q $DSCP -d $Destination -a $Password
+		$BIN/metis_twmping.sh -t $IP -q $DSCP -d $DestinationURL -a $DestinationPassword
 		if [ $? -ne 0 ]; then
     			echo "Some error ocured during processing of metis twamp wrapper!"
 			exit 2

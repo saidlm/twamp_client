@@ -4,20 +4,30 @@
 DATA=${DATA_DIR}
 BIN=${BIN_DIR}
 
-SRC='http://host.domain.xxx/dir/'
+## Loading global configuration
+if [ -f "$DATA/global_config.json" ]; then
+        eval "$(cat $DATA/global_config.json | jq -r '{ ConfigURL, ConfigPassword, ConfigUser } | to_entries | .[] | .key + "=" + (.value | @sh)')"
+else
+        echo "Global config is missing! Trere is no information how to download config files!"
+        exit 1
+fi
 
 echo "Downloading new configuration ..."
-
 # Downloading new configs
-curl -o $DATA/global_config.json.new $SRC/global_config.json
+curl -o $DATA/global_config.json.new $ConfigURL/global_config.json
 if [ $? -ne 0 ]; then
 	echo "Global config is missin, nothing to donload! Skipping .."
 	exit 1
 fi
 
-curl -o $DATA/targets_list.json.new $SRC/targets_list.json
+if [ -n "ConfigUser" ]; then
+	curl --user ConfigUser:ConfigPassword -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
+else
+	curl -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
+fi
+
 if [ $? -ne 0 ]; then
-	echo "Targets list is missing, nothing to download! Skipping ..."
+	echo "Global config is missing, nothing to download! Skipping ..."
 	exit 1
 fi
 

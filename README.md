@@ -32,8 +32,6 @@ docker compose build
 | **cron.d/probe** | Crontab defining probe time cycle
 | **cron.d/config_downloader** | Crontab for config downloader
 
-Unfortunately the central site where configurations are store is hardcoded in bin/config_downloader at this time. It will be changed in one of the next development step.
-
 
 ## Running
 Create new container and start:
