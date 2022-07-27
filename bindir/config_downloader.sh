@@ -6,27 +6,35 @@ BIN=${BIN_DIR}
 
 ## Loading global configuration
 if [ -f "$DATA/global_config.json" ]; then
-        eval "$(cat $DATA/global_config.json | jq -r '{ ConfigURL, ConfigPassword, ConfigUser } | to_entries | .[] | .key + "=" + (.value | @sh)')"
+        eval "$(cat $DATA/global_config.json | jq -r '.ConfigSource | { ConfigURL, ConfigPassword, ConfigUser } | to_entries | .[] | .key + "=" + (.value | @sh)')"
 else
         echo "Global config is missing! Trere is no information how to download config files!"
         exit 1
 fi
 
-echo "Downloading new configuration ..."
-# Downloading new configs
-curl -o $DATA/global_config.json.new $ConfigURL/global_config.json
-if [ $? -ne 0 ]; then
-	echo "Global config is missin, nothing to donload! Skipping .."
+if [ $ConfigURL == "null" ]; then
+	echo "Source URL is not configured."
 	exit 1
 fi
 
-if [ -n "ConfigUser" ]; then
-	curl --user ConfigUser:ConfigPassword -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
-else
+echo "Downloading new configuration ..."
+
+ERR=0
+
+if [ $ConfigUser == "null" ]; then
+	echo "Access to your configuration files is not protected by password!"
 	curl -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
+	ERR=$(($ERR + $?))
+	curl -o $DATA/global_config.json.new $ConfigURL/global_config.json
+	ERR=$(($ERR + $?))
+else
+	curl --user ConfigUser:ConfigPassword -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
+	ERR=$(($ERR + $?))
+	curl --user ConfigUser:ConfigPassword -o $DATA/global_config.new $ConfigURL/global_config.json
+	ERR=$(($ERR + $?))
 fi
 
-if [ $? -ne 0 ]; then
+if [ $ERR -ne 0 ]; then
 	echo "Global config is missing, nothing to download! Skipping ..."
 	exit 1
 fi

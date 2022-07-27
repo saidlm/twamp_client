@@ -1,0 +1,5 @@
+{
+	"ConfigSource":{
+		"ConfigURL": "http://<host.domain>/<path>"
+	}
+}

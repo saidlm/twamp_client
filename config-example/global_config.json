@@ -1,0 +1,11 @@
+{
+	"ConfigSource":{
+		"ConfigURL": "http://<host.domain>/<path>",
+		"ConfigUser": "<Username>",
+		"ConfigPassword": "<Password>"
+	},
+	"Destination":{
+		"DestinationURL": "https://<host.domain>:<port>/<path>",
+		"DestinationPassword": "<Password in hash form>"
+	}
+}
