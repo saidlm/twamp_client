@@ -16,25 +16,66 @@ docker compose build
 ```
 
 ## Configuration
+
+### Container configuration
 * Create volume
 * Change storage path in docker-compose.yml
 * Basic configuration will be automaticaly populated during the first run; tree new directovy will be created on your volume - bin/ cron.d/ and data/
-* Cahnge crontabs according your needs if necessary
+* Change URL and credentioal of config site in data/global_config.json in "ConfigSource" section. 
+* Change crontabs according your needs if necessary
 
+#### Directory structure
 | Directory | Description
-| :-- | :--
+| :--- | :---
 | **bin** | Executable scripts
 | **cron.d** | Crontabs
 | **data** | Dynamic configs downloaded from central site
 
+#### Configuration files
 | File Name | Description 
-| :-- | :--
+| :--- | :---
 | **cron.d/probe** | Crontab defining probe time cycle
 | **cron.d/config_downloader** | Crontab for config downloader
+| **data.d/global_config.json** | Basic global configuration; it will be overwrited after the first start by newly downloaded configuration file.
 
+### Twamp client configuration
+* Only update of the configuration files is possible in current version of the client container. The plan is to have possibility to update almost whole container functionality from central site in defined time interval in the end of the day.
+* There must be at least two files stored on URL configured in the section "ConfigSource" of global_config file - global_config.json and targets.json
+* The examples of configuration files are in config_example directory of the project.
+
+#### global_config.json
+There are two section for current version of client container:
+
+| Section | Description 
+| :--- | :---
+| **ConfigSource** | Define URL and credentials for configuration downloader
+| **Destination** | Define URL and passphrase for message colector (telegraf)
+
+ConfigURL section parameters are:
+
+| Parameter | Description
+| :--- | :---
+| **ConfigURL** | URL where configuration files are stored
+| **ConfigUser** | User <ptional>
+| **ConfigPassword** | Password <optional>
+
+Destination section parameters are:
+
+| Parameter | Description
+| :--- | :---
+| **DestinationURL** | URL of telegraf collector
+| **DestinationPassword** | Passphrase for telegraf collector in MD5 hash form
+
+#### targets.json
+There is currently only one section - **Targets**. It includes array of targets' (twamp responders') parameters. 
+
+| Parameter | Description
+| :--- | :---
+| **IP** | IP address or DNS name of the twamp responder
+| **DSCP** | DSCP mark for the test packet header
 
 ## Running
-Create new container and start:
+Create new container and start it:
 ```
 docker compose up -d
 ```
