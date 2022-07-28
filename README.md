@@ -20,7 +20,7 @@ docker compose build
 ### Container configuration
 * Create volume
 * Change storage path in docker-compose.yml
-* Basic configuration will be automaticaly populated during the first run; tree new directovy will be created on your volume - bin/ cron.d/ and data/
+* Basic configuration will be automaticaly populated during the first run; three new directovy will be created on your volume - bin/ cron.d/ and data/
 * Change URL and credentioal of config site in data/global_config.json in "ConfigSource" section. 
 * Change crontabs according your needs if necessary
 
