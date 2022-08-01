@@ -23,14 +23,14 @@ ERR=0
 
 if [ $ConfigUser == "null" ]; then
 	echo "Access to your configuration files is not protected by password!"
-	curl -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
+	curl -k -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
 	ERR=$(($ERR + $?))
-	curl -o $DATA/global_config.json.new $ConfigURL/global_config.json
+	curl -k -o $DATA/global_config.json.new $ConfigURL/global_config.json
 	ERR=$(($ERR + $?))
 else
-	curl --user ConfigUser:ConfigPassword -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
+	curl -k --user ConfigUser:ConfigPassword -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
 	ERR=$(($ERR + $?))
-	curl --user ConfigUser:ConfigPassword -o $DATA/global_config.new $ConfigURL/global_config.json
+	curl -k --user ConfigUser:ConfigPassword -o $DATA/global_config.json.new $ConfigURL/global_config.json
 	ERR=$(($ERR + $?))
 fi
 
