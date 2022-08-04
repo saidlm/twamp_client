@@ -17,9 +17,12 @@ docker compose build
 
 ## Configuration
 
+The input for docker compose is split into two files - docker-mpose.yml and docker-compose.override.yml. It is done due to provisioning automation. Common container configuration is stored in docker-compose.yml but everything which is site specific is a part of docker-compose.override.yml file. Site specific configuration can be easily generated during provisioning of the probe base on database data by ansible or any other automated solution. Everything else is same for all network sites. 
+
 ### Container configuration
 * Create volume
 * Change storage path in docker-compose.yml
+* Change hostname of client container (if necessary) in docker-compose.yml. The hostname is used as data source identification for metrics.
 * Basic configuration will be automaticaly populated during the first run; three new directovy will be created on your volume - bin/ cron.d/ and data/
 * Change URL and credentioal of config site in data/global_config.json in "ConfigSource" section. 
 * Change crontabs according your needs if necessary
