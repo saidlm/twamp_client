@@ -12,9 +12,9 @@ create_conf_dirs() {
   # populate default configuration if it does not exis
   echo "Populating default configs ..."
 
-  if [ ! -d $BIN ]; then
+#  if [ ! -d $BIN ]; then
     cp -r /ipprobe/bin $BIN
-  fi
+#  fi
 
   if [ ! -d $DATA ]; then
     cp -r /ipprobe/data $DATA
