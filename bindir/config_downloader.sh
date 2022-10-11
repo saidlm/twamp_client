@@ -23,6 +23,7 @@ ERR=0
 mkdir -p $DATA/config.old
 ERR=$(($ERR + $?))
 
+<<<<<<< HEAD
 if [ "$ConfigMethod" == "web" ]; then
 	mkdir -p $DATA/config.new
 	ERR=$(($ERR + $?))
@@ -51,6 +52,19 @@ elif [ "$ConfigMethod" == "git" ]; then
 else
 	echo "No configuration download method is configured! The valid methods are: web or git. Skipping ..."
 	exit 1
+=======
+if [ $ConfigUser == "null" ]; then
+	echo "Access to your configuration files is not protected by password!"
+	curl -k -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
+	ERR=$(($ERR + $?))
+	curl -k -o $DATA/global_config.json.new $ConfigURL/global_config.json
+	ERR=$(($ERR + $?))
+else
+	curl -k --user ConfigUser:ConfigPassword -o $DATA/targets_list.json.new $ConfigURL/targets_list.json
+	ERR=$(($ERR + $?))
+	curl -k --user ConfigUser:ConfigPassword -o $DATA/global_config.json.new $ConfigURL/global_config.json
+	ERR=$(($ERR + $?))
+>>>>>>> 88249a5e8894524df44254e4683a4972a0985873
 fi
 
 if [ "$ERR" -ne 0 ]; then

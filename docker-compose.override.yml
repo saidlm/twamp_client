@@ -1,0 +1,3 @@
+services:
+  twamp:
+    hostname: twamp-client
