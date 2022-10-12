@@ -42,9 +42,10 @@ The input for docker compose is split into two files - docker-mpose.yml and dock
 | **data.d/global_config.json** | Basic global configuration; it will be overwrited after the first start by newly downloaded configuration file.
 
 ### Twamp client configuration
-* Only update of the configuration files is possible in current version of the client container. The plan is to have possibility to update almost whole container functionality from central site in defined time interval in the end of the day.
+* Only update of the configuration files is possible in current version of the client container. The plan is to have possibility to update almost whole container functionality from central site in defined time interval at the end of the day.
 * There must be at least two files stored on URL configured in the section "ConfigSource" of global_config file - global_config.json and targets.json
 * The examples of configuration files are in config_example directory of the project.
+* There are two method how to download configuration files from central site. The method can be configured in main config file it can be 'web' or 'git'.
 
 #### global_config.json
 There are two section for current version of client container:
@@ -54,10 +55,19 @@ There are two section for current version of client container:
 | **ConfigSource** | Define URL and credentials for configuration downloader
 | **Destination** | Define URL and passphrase for message colector (telegraf)
 
-ConfigURL section parameters are:
+ConfigURL section parameters are different for git and web method.
+Configuration for git method:
 
 | Parameter | Description
 | :--- | :---
+| **ConfigMethod** | **git**
+| **ConfigURL** | Git URL where configuration files are stored. Username and password is is part of URL in standard form
+
+Configuration for web method:
+
+| Parameter | Description
+| :--- | :---
+| **ConfigMethod** | **web**
 | **ConfigURL** | URL where configuration files are stored
 | **ConfigUser** | User <ptional>
 | **ConfigPassword** | Password <optional>
