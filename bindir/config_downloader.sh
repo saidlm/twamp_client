@@ -58,11 +58,25 @@ if [ "$ERR" -ne 0 ]; then
 	exit 1
 fi
 
-cp -u $DATA/global_config.json $DATA/config.old/global_config.json
-cp -u $DATA/targets_list.json $DATA/config.old/targets_list.json
+jq '.' $DATA/config.new/global_config.json >/dev/null 2>&1
+ERR=$?
 
-cp -u $DATA/config.new/global_config.json $DATA/global_config.json
-cp -u $DATA/config.new/targets_list.json $DATA/targets_list.json
+if [ "$ERR" -eq 0 ]; then 
+	cp -u $DATA/global_config.json $DATA/config.old/global_config.json
+	cp -u $DATA/config.new/global_config.json $DATA/global_config.json
+else
+	echo "Global config has wrong format. Skipping ..."
+fi
+
+jq '.' $DATA/config.new/targets_list.json >/dev/null 2>&1
+ERR=$?
+
+if [ "$ERR" -eq 0 ]; then
+	cp -u $DATA/targets_list.json $DATA/config.old/targets_list.json
+	cp -u $DATA/config.new/targets_list.json $DATA/targets_list.json
+else
+	echo "Targets list has wrong format. Skipping ..."
+fi
 
 echo "Download complete."
 
