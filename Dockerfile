@@ -31,8 +31,8 @@ COPY /scripts/entrypoint.sh /sbin/entrypoint.sh
 RUN chmod +x /sbin/entrypoint.sh
 
 RUN mkdir /ipprobe
+RUN mkdir /ipprobe/cron.d/ 
 COPY bindir /ipprobe/bin/
-COPY cron.d /ipprobe/cron.d/
 COPY datadir /ipprobe/data/
 RUN chmod +x /ipprobe/bin/*
 
