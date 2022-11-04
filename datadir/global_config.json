@@ -1,5 +1,8 @@
 {
 	"ConfigSource":{
-		"ConfigURL": "http://<host.domain>/<path>"
+		"ConfigMethod": "web",
+		"ConfigURL": "http(s)://<host.domain>/<path>",
+		"ConfigUser": "<username>",
+		"ConfigPassword": "<password>"
 	}
 }
