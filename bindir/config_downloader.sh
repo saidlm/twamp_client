@@ -4,9 +4,12 @@
 DATA=${DATA_DIR}
 BIN=${BIN_DIR}
 
+CONFIG_FILE="twamp_$CONFIG_FILE"
+TARGETS_FILE="twamp_$TARGETS_FILE"
+
 ## Loading global configuration
-if [ -f "$DATA/global_config.json" ]; then
-        eval "$(cat $DATA/global_config.json | jq -r '.ConfigSource | { ConfigMethod, ConfigURL, ConfigPassword, ConfigUser } | to_entries | .[] | .key + "=" + (.value | @sh)')"
+if [ -f "$DATA/$CONFIG_FILE" ]; then
+        eval "$(cat $DATA/$CONFIG_FILE | jq -r '.ConfigSource | { ConfigMethod, ConfigURL, ConfigPassword, ConfigUser } | to_entries | .[] | .key + "=" + (.value | @sh)')"
 else
         echo "Global config is missing! Trere is no information how to download config files!"
         exit 1
@@ -29,14 +32,14 @@ if [ "$ConfigMethod" == "web" ]; then
 
 	if [ "$ConfigUser" == "null" ]; then
 		echo "Access to your configuration files is not protected by password!"
-		curl -k -o $DATA/config.new/targets_list.json $ConfigURL/targets_list.json
+		curl -k -o $DATA/config.new/$TARGETS_FILE $ConfigURL/$TARGETS_FILE
 		ERR=$(($ERR + $?))
-		curl -k -o $DATA/config.new/global_config.json $ConfigURL/global_config.json
+		curl -k -o $DATA/config.new/$CONFIG_FILE $ConfigURL/$CONFIG_FILE
 		ERR=$(($ERR + $?))
 	else
-		curl -k --user ConfigUser:ConfigPassword -o $DATA/config.new/targets_list.json $ConfigURL/targets_list.json
+		curl -k --user ConfigUser:ConfigPassword -o $DATA/config.new/$TARGETS_FILE $ConfigURL/$TARGETS_FILE
 		ERR=$(($ERR + $?))
-		curl -k --user ConfigUser:ConfigPassword -o $DATA/config.new/global_config $ConfigURL/global_config.json
+		curl -k --user ConfigUser:ConfigPassword -o $DATA/config.new/global_config $ConfigURL/$CONFIG_FILE
 		ERR=$(($ERR + $?))
 	fi
 
@@ -54,29 +57,15 @@ else
 fi
 
 if [ "$ERR" -ne 0 ]; then
-	echo "Global config is missing or something went wrong, nothing to download! Skipping ..."
+	echo "Global config is missing or somrthing went wrong, nothing to download! Skipping ..."
 	exit 1
 fi
 
-jq '.' $DATA/config.new/global_config.json >/dev/null 2>&1
-ERR=$?
+cp -u $DATA/$CONFIG_FILE $DATA/config.old/$CONFIG_FILE
+cp -u $DATA/$TARGETS_FILE $DATA/config.old/$TARGETS_FILE
 
-if [ "$ERR" -eq 0 ]; then 
-	cp -u $DATA/global_config.json $DATA/config.old/global_config.json
-	cp -u $DATA/config.new/global_config.json $DATA/global_config.json
-else
-	echo "Global config has wrong format. Skipping ..."
-fi
-
-jq '.' $DATA/config.new/targets_list.json >/dev/null 2>&1
-ERR=$?
-
-if [ "$ERR" -eq 0 ]; then
-	cp -u $DATA/targets_list.json $DATA/config.old/targets_list.json
-	cp -u $DATA/config.new/targets_list.json $DATA/targets_list.json
-else
-	echo "Targets list has wrong format. Skipping ..."
-fi
+cp -u $DATA/config.new/$CONFIG_FILE $DATA/$CONFIG_FILE
+cp -u $DATA/config.new/$TARGETS_FILE $DATA/$TARGETS_FILE
 
 echo "Download complete."
 
