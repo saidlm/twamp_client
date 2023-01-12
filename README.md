@@ -86,11 +86,12 @@ There is currently only one section - **Targets**. It includes array of targets'
 | :--- | :---
 | **IP** | IP address or DNS name of the twamp responder
 | **DSCP** | DSCP mark for the test packet header
+| **Custom_comment** | Comment string which is part of metric message
 
 ## Running
 Create new container and start it:
 ```
-docker compose up -d
+PROBE_PREFIX=<probe_prefix> docker compose up -d
 ```
 
 ### Network ports
