@@ -22,10 +22,10 @@ fi
 ## Main loop
 if [ -f "$DATA/$TARGETS_FILE" ]; then
 	cat $DATA/$TARGETS_FILE | jq -r '.Targets[] | @base64' | while read line ; do
-		eval "$(echo $line | base64 --decode | jq -r '{ IP, DSCP } | to_entries | .[] | .key + "=" + (.value | @sh)')"
+		eval "$(echo $line | base64 --decode | jq -r '{ IP, DSCP, Tags, Custom_comment } | to_entries | .[] | .key + "=" + (.value | @sh)')"
 
 		echo -n "Processing $IP ... "
-		$BIN/metis_twmping.sh -t $IP -q $DSCP -d $DestinationURL -a $DestinationPassword -s `hostname -f`
+		$BIN/metis_twmping.sh -t $IP -q $DSCP -d $DestinationURL -a $DestinationPassword -s `hostname -f` -c $Custom_comment
 		ERR=$?
 		if [ $ERR -eq 124 ]; then
 			echo "Destination host is not responding; timeout."

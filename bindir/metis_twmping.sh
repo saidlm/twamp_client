@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# METIS perfSONAR twping wrapper for TWAMP measurements
+# perfSONAR twping wrapper for TWAMP measurements
 #
-# Release 1.9.0
+# Release 1.10.0
 #
-# Bartlomiej Kos, bartlomiej.kos@t-mobile.pl / NWI-ITI / GTS Poland
-# Martin Saidl, martin.saidl@t-mobile.cz / NWI-ITI / GTS Czech Republic
-# Andreas Laudwein, andreas.laudwein@telekom.de / NWI-ITI
+# Bartlomiej Kos, bartlomiej.kos@t-mobile.pl
+# Martin Saidl, martin.saidl@t-mobile.cz
+# Andreas Laudwein, andreas.laudwein@telekom.de
 #
 
 ###
@@ -18,11 +18,12 @@
 
 ### ENVIRONMENTALS
 
-PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/bin:/sbin
 
 ### VARIABLES
 
 _test_source1=""
+_custom_comment1=""
 
 ###
 ### FUNCTIONS
@@ -214,11 +215,13 @@ case ${return_value1} in
  fi
 
  output_oneliner1="${output_oneliner1},\"reachable_bool\":1"
+ output_oneliner1="${output_oneliner1},\"custom_comment\":\"${_custom_comment1}\""
  output_oneliner1="${output_oneliner1}}"
  ;;
 *)
  output_oneliner1="${output_oneliner1},\"from_host\":\"${_test_source1}\",\"to_host\":\"${_test_target1}\""
  output_oneliner1="${output_oneliner1},\"reachable_bool\":0"
+ output_oneliner1="${output_oneliner1},\"custom_comment\":\"${_custom_comment1}\""
  output_oneliner1="${output_oneliner1}}"
  ;;
 esac
@@ -238,7 +241,7 @@ if [ "${_test_source1}" = "" ]; then _test_source1="$(hostname -f)"; fi
 ### LOOPS
 ###
 
-while getopts "t:q:d:a:s:" _options1; do
+while getopts "t:q:d:a:s:c:" _options1; do
  case ${_options1} in
  t)
   _test_target1="${OPTARG}"
@@ -256,7 +259,10 @@ while getopts "t:q:d:a:s:" _options1; do
  s)
   _test_source1="${OPTARG}"
   ;;
-  *)
+ c)
+  _custom_comment1="${OPTARG}"
+  ;;
+ *)
   exit 1
   ;;
  esac
@@ -275,3 +281,4 @@ send_result1
 exit ${return_value1}
 
 # EOF
+

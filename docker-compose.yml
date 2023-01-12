@@ -7,19 +7,14 @@ services:
     hostname: twamp-client
     image: twamp-client:latest
     volumes:
-      - twamp:/config
+      - twamp-client:/config
     networks:
-      twamp:
+      twamp-client:
     restart: unless-stopped
 
 networks:
-  twamp:
+  twamp-client:
     driver: bridge
-volumes:
-  twamp:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/pi/containers/twamp-client
-      o: bind
 
+volumes:
+  twamp-client:

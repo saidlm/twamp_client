@@ -1,3 +1,4 @@
 services:
   twamp:
-    hostname: twamp-client
+    container_name: ${PROBE_PREFIX}twamp-client
+    hostname: ${PROBE_PREFIX}twamp-client
