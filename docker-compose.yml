@@ -6,6 +6,8 @@ services:
     container_name: twamp-client
     hostname: twamp-client
     image: twamp-client:latest
+    environment:
+      - PROBE_SOURCE=${PROBE_SOURCE}
     volumes:
       - twamp-client:/config
     networks:

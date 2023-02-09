@@ -4,6 +4,7 @@ set -e
 DATA=${DATA_DIR}
 BIN=${BIN_DIR}
 CRON=${CRON_DIR}
+SOURCE=${PROBE_SOURCE}
 
 create_conf_dirs() {
   echo "Creating config dir ..."
@@ -12,9 +13,9 @@ create_conf_dirs() {
   # populate default configuration if it does not exis
   echo "Populating default configs ..."
 
-#  if [ ! -d $BIN ]; then
+  if [ ! -d $BIN ]; then
     cp -r /ipprobe/bin $BIN
-#  fi
+  fi
 
   if [ ! -d $DATA ]; then
     cp -r /ipprobe/data $DATA
@@ -47,14 +48,15 @@ export_env() {
   echo "DATA_DIR=$DATA" > /container.env
   echo "BIN_DIR=$BIN" >> /container.env
   echo "CRON_DIR=$CRON" >> /container.env
+  echo "PROBE_SOURCE=$SOURCE" >> /container.env
 }
 
 create_conf_dirs
 create_crontabs
 export_env
 
-echo "Starting download of the configuration (first run) .."
-/config/bin/config_downloader.sh
+#echo "Starting download of the configuration (first run) .."
+#/config/bin/config_downloader.sh
 
 echo "Starting crond ..."
 exec $(which cron) -f -L 15
