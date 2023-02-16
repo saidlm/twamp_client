@@ -1,13 +1,16 @@
 #!/bin/bash
 
+
 ## Variables
 DATA=${DATA_DIR}
 BIN=${BIN_DIR}
 
-CONFIG_FILE="twamp_$CONFIG_FILE"
-TARGETS_FILE="twamp_$TARGETS_FILE"
+CONFIG_FILE="global_config.json"
+TARGETS_FILE="targets_list.json"
 
 ## Loading global configuration
+echo $DATA/$CONFIG_FILE
+
 if [ -f "$DATA/$CONFIG_FILE" ]; then
         eval "$(cat $DATA/$CONFIG_FILE | jq -r '.ConfigSource | { ConfigMethod, ConfigURL, ConfigPassword, ConfigUser } | to_entries | .[] | .key + "=" + (.value | @sh)')"
 else
@@ -46,7 +49,7 @@ if [ "$ConfigMethod" == "web" ]; then
 elif [ "$ConfigMethod" == "git" ]; then
 	if [ ! -d "$DATA/config.new/.git" ]; then
 		rm -rf $DATA/config.new
-		git clone $ConfigURL $DATA/config.new/
+		git --exec-path=/usr/lib/git-core --git-dir=$DATA/.git/ --work-tree=$DATA/config.new/ clone $ConfigURL $DATA/config.new/
 		ERR=$(($ERR + $?))
 	fi
 	#git -C $DATA/config.new $ConfigURL pull

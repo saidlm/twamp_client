@@ -23,6 +23,7 @@ RUN curl http://downloads.perfsonar.net/debian/perfsonar-official.gpg.key | apt-
 	jq \
         cron \
         git \
+	traceroute \	
         twamp-client \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
