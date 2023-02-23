@@ -4,8 +4,8 @@
 DATA=${DATA_DIR}
 BIN=${BIN_DIR}
 
-CONFIG_FILE="twamp_$CONFIG_FILE"
-TARGETS_FILE="twamp_$TARGETS_FILE"
+CONFIG_FILE="global_config.json"
+TARGETS_FILE="targets_list.json"
 
 # Setting probe source name
 if [ -z "$PROBE_SOURCE" ]; then
@@ -31,7 +31,7 @@ fi
 ## Main loop
 if [ -f "$DATA/$TARGETS_FILE" ]; then
 	cat $DATA/$TARGETS_FILE | jq -r '.Targets[] | @base64' | while read line ; do
-		eval "$(echo $line | base64 --decode | jq -r '{ IP, DSCP, Tags, Custom_comment, Latitude, Longitude} | to_entries | .[] | .key + "=" + (.value | @sh)')"
+		eval "$(echo $line | base64 --decode | jq -r '{ IP, DSCP, Custom_id, Latitude, Longitude} | to_entries | .[] | .key + "=" + (.value | @sh)')"
 
 		echo -n "Processing $IP ... "
 		$BIN/metis_twmping.sh -t "$IP" -q "$DSCP" -d "$DestinationURL" -a "$DestinationPassword" -s "$SOURCE" -c "$Custom_comment"
