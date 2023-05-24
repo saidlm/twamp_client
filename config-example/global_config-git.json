@@ -1,0 +1,17 @@
+{
+	"ConfigSource":{
+		"ConfigMethod": "git",
+		"ConfigURL": "https://<username>:<password>@<host.domain>/<path>"
+	},
+	"Destinations":[
+		{
+			"DestinationURL": "https://<host.domain>:<port>/<path>",
+			"DestinationPassword": "<Password in hash form>"
+		},
+		{
+			"DestinationURL": "https://<host.domain>:<port>/<path>",
+			"DestinationPassword": "<Password in hash form>"
+		}
+	]
+}
+

@@ -1,0 +1,20 @@
+{
+	"Targets":[
+		{
+			"IP": "1.2.3.4",
+			"DSCP": "2",
+			"Latitude": "50.123",
+			"Longitude": "15.123",
+			"Description": "<Description ...>",
+			"Tags": "<tag1 tag2 tag3>"
+		},
+		{
+			"IP": "10.20.30.40",
+			"DSCP": "0",
+			"Latitude": "50.123",
+			"Longitude": "15.123",
+			"Description": "<Description ...>",
+			"Tags": "<tag1 tag2 tag3>"
+		}
+	]
+}
