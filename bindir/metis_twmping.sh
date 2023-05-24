@@ -1,12 +1,9 @@
 #!/bin/bash
 #
-# perfSONAR twping wrapper for TWAMP measurements
+# perfSONAR twping wrapper for
+# various TWAMP measurements
 #
-# Release 1.10.0
-#
-# Bartlomiej Kos, bartlomiej.kos@t-mobile.pl
-# Martin Saidl, martin.saidl@t-mobile.cz
-# Andreas Laudwein, andreas.laudwein@telekom.de
+# Release 1.14.1
 #
 
 ###
@@ -16,32 +13,41 @@
 ### DEBUG
 # set -x
 
-### ENVIRONMENTALS
+### ENVIRONMENT
 
 PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/bin:/sbin
 
 ### VARIABLES
 
-_test_source1=""
+_test_dscp1="0"
+_test_source_name1=""
+_test_source_address1=""
 _custom_comment1=""
+_custom_id1="0"
+_geo_lon1="0.0"
+_geo_lat1="0.0"
 
 ###
 ### FUNCTIONS
 ###
 
-get_return_value1() { return_value1=${?}; }
+get_return_value1() { _return_value1="${?}"; }
 
-run_test1() { result1=$(timeout -k5s 40s twping -M -Z -D ${_test_dscp1} ${_test_target1} 2>&1); get_return_value1; }
+run_test1()
+{
+  if [ "${_test_source_address1}" = "" ]; then _twping1="twping"; else _twping1="twping -S ${_test_source_address1}"; fi
+
+  result1=$(timeout -k5s 40s ${_twping1} -M -Z -D ${_test_dscp1} ${_test_target1} 2>&1)
+  get_return_value1
+}
 
 process_result1()
 {
 output_oneliner1="{\"measurement_name\":\"twamp_twping1\""
 
-case ${return_value1} in
+case ${_return_value1} in
 0)
- # from_host1="${result1/*FROM_HOST[[:space:]]/}"
- # from_host1="${from_host1%%[[:space:]]*}"
- output_oneliner1="${output_oneliner1},\"from_host\":\"${_test_source1}\""
+ output_oneliner1="${output_oneliner1},\"from_host\":\"${_test_source_name1}\""
 
  from_addr1="${result1/*FROM_ADDR[[:space:]]/}"
  from_addr1="${from_addr1%%[[:space:]]*}"
@@ -215,13 +221,13 @@ case ${return_value1} in
  fi
 
  output_oneliner1="${output_oneliner1},\"reachable_bool\":1"
- output_oneliner1="${output_oneliner1},\"custom_comment\":\"${_custom_comment1}\""
+ output_oneliner1="${output_oneliner1},\"custom_comment\":\"${_custom_comment1}\",\"custom_id\":\"${_custom_id1}\",\"geo_lon\":${_geo_lon1},\"geo_lat\":${_geo_lat1}"
  output_oneliner1="${output_oneliner1}}"
  ;;
 *)
- output_oneliner1="${output_oneliner1},\"from_host\":\"${_test_source1}\",\"to_host\":\"${_test_target1}\""
+ output_oneliner1="${output_oneliner1},\"from_host\":\"${_test_source_name1}\",\"to_host\":\"${_test_target1}\""
  output_oneliner1="${output_oneliner1},\"reachable_bool\":0"
- output_oneliner1="${output_oneliner1},\"custom_comment\":\"${_custom_comment1}\""
+ output_oneliner1="${output_oneliner1},\"custom_comment\":\"${_custom_comment1}\",\"custom_id\":\"${_custom_id1}\",\"geo_lon\":${_geo_lon1},\"geo_lat\":${_geo_lat1}"
  output_oneliner1="${output_oneliner1}}"
  ;;
 esac
@@ -229,19 +235,27 @@ esac
 
 send_result1()
 {
-curl --connect-timeout 15 -m 10 -s -k -X POST -H "Content-Type: application/json" -H "Authorization: Basic ${_result_delivery_auth_string1}" -d "${output_oneliner1}" ${_result_delivery_url1}
+(
+for _result_target1 in ${_result_delivery_array1[@]}
+do
+  _result_target_credentials1="${_result_target1%%\@*}"
+  _result_target_target1="${_result_target1##*\@}"
+  curl --connect-timeout 5 -m 5 -s -k -X POST -H "Content-Type: application/json" -H "Authorization: Basic ${_result_target_credentials1}" -d "${output_oneliner1}" "${_result_target_target1}"
+  sleep .$(( ($RANDOM % 3) + 1 ))
+done
+) &
 }
 
 set_test_source_name1()
 {
-if [ "${_test_source1}" = "" ]; then _test_source1="$(hostname -f)"; fi
+if [ "${_test_source_name1}" = "" ]; then _test_source_name1="$(hostname -f)"; fi
 }
 
 ###
 ### LOOPS
 ###
 
-while getopts "t:q:d:a:s:c:" _options1; do
+while getopts "t:q:d:s:A:c:i:o:l:" _options1; do
  case ${_options1} in
  t)
   _test_target1="${OPTARG}"
@@ -251,16 +265,25 @@ while getopts "t:q:d:a:s:c:" _options1; do
   _test_dscp1="${OPTARG}"
   ;;
  d)
-  _result_delivery_url1="${OPTARG}"
-  ;;
- a)
-  _result_delivery_auth_string1="${OPTARG}"
+  read -r -a _result_delivery_array1 <<< "${OPTARG}"
   ;;
  s)
-  _test_source1="${OPTARG}"
+  _test_source_name1="${OPTARG}"
+  ;;
+ A)
+  _test_source_address1="${OPTARG}"
   ;;
  c)
   _custom_comment1="${OPTARG}"
+  ;;
+ i)
+  _custom_id1="${OPTARG}"
+  ;;
+ o)
+  _geo_lon1="${OPTARG}"
+  ;;
+ l)
+  _geo_lat1="${OPTARG}"
   ;;
  *)
   exit 1
@@ -278,7 +301,8 @@ send_result1
 ### POST-RUN
 ###
 
-exit ${return_value1}
+wait
+
+exit "${_return_value1}"
 
 # EOF
-
